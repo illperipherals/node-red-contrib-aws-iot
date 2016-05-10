@@ -1,0 +1,265 @@
+<!--
+  Copyright 2013, 2016 IBM Corp.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="aws-iot-in">
+    <div class="form-row">
+        <label for="node-input-broker"><i class="fa fa-globe"></i> <span data-i18n="aws-iot.label.broker"></span></label>
+        <input type="text" id="node-input-broker">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> <span data-i18n="aws-iot.label.topic"></span></label>
+        <input type="text" id="node-input-topic" data-i18n="[placeholder]aws-iot.label.topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="aws-iot.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]aws-iot.label.name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="aws-iot-in">
+    <p>Connects to an AWS IOT broker and subscribes to the specified topic.</p>
+    <p>Outputs a message with the properties:</p>
+    <ul>
+       <li><code>msg.topic</code></li>
+       <li><code>msg.payload</code></li>
+       <li><code>msg.qos</code></li>
+    </ul>
+    <p><code>msg.payload</code> will be a String, unless it is detected as a binary buffer.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('aws-iot-in',{
+        category: 'input',
+        defaults: {
+            name: {value:""},
+            topic: {value:"",required:true,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
+            broker: {type:"aws-iot-broker", required:true}
+        },
+        color:"#C0DEED",
+        inputs:0,
+        outputs:1,
+        icon: "amazon.png",
+        label: function() {
+            return this.name||this.topic||"aws iot";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="aws-iot-out">
+    <div class="form-row">
+        <label for="node-input-broker"><i class="fa fa-globe"></i> <span data-i18n="aws-iot.label.broker"></span></label>
+        <input type="text" id="node-input-broker">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> <span data-i18n="aws-iot.label.topic"></span></label>
+        <input type="text" id="node-input-topic" data-i18n="[placeholder]aws-iot.label.topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-qos"><i class="fa fa-empire"></i> <span data-i18n="aws-iot.label.qos"></span></label>
+        <select id="node-input-qos" style="width:125px !important">
+            <option value=""></option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="aws-iot.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]aws-iot.label.name">
+    </div>
+    <div class="form-tips"><span data-i18n="aws-iot.tip"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="aws-iot-out">
+    <p>Connects to an AWS IOT broker and publishes messages.</p>
+    <p>The topic used can be configured in the node or, if left blank, can be set
+       by <code>msg.topic</code>.</p>
+    <p>Likewise the QoS can be configured in the node or, if left
+       blank, set by <code>msg.qos</code>.
+       By default, messages are published at QoS 0.</p>
+    <p>If <code>msg.payload</code> contains an object it will be converted to JSON
+       before being sent.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('aws-iot-out',{
+        category: 'output',
+        defaults: {
+            name: {value:""},
+            topic: {value:""},
+            qos: {value:""},
+            broker: {type:"aws-iot-broker"}
+        },
+        color:"#C0DEED",
+        inputs:1,
+        outputs:0,
+        icon: "amazon.png",
+        align: "right",
+        label: function() {
+            return this.name||this.topic||"aws iot";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="aws-iot-broker">
+    <div class="form-row">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-aws-iot-broker-tabs"></ul>
+    </div>
+    <div id="node-config-aws-iot-broker-tabs-content" style="min-height: 170px;">
+        <div id="aws-iot-broker-tab-connection" style="display:none">
+            <div class="form-row node-input-broker">
+                <label for="node-config-input-broker"><i class="fa fa-globe"></i> <span data-i18n="aws-iot.label.broker"></span></label>
+                <input class="input-append-left" type="text" id="node-config-input-broker" placeholder="localhost" style="width: 40%;" >
+                <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="aws-iot.label.port"></span></label>
+                <input type="text" id="node-config-input-port" data-i18n="[placeholder]aws-iot.label.port" style="width:45px">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-clientid"><i class="fa fa-tag"></i> <span data-i18n="aws-iot.label.clientid"></span></label>
+                <input type="text" id="node-config-input-clientid" data-i18n="[placeholder]aws-iot.placeholder.clientid">
+            </div>
+
+            <div class="form-row">
+                <label for="node-config-input-keepalive" style="width: auto"><i class="fa fa-clock-o"></i> <span data-i18n="aws-iot.label.keepalive"></span></label>
+                <input type="text" id="node-config-input-keepalive" style="width: 50px">
+            </div>
+        </div>
+        <div id="aws-iot-broker-tab-security" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-keypath"><i class="fa fa-file-o"></i> <span data-i18n="aws-iot.label.keypath"></span></label>
+                <input type="text" id="node-config-input-keypath" data-i18n="[placeholder]aws-iot.placeholder.keypath">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-certpath"><i class="fa fa-file-o"></i> <span data-i18n="aws-iot.label.certpath"></span></label>
+                <input type="text" id="node-config-input-certpath" data-i18n="[placeholder]aws-iot.placeholder.certpath">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-capath"><i class="fa fa-file-o"></i> <span data-i18n="aws-iot.label.capath"></span></label>
+                <input type="text" id="node-config-input-capath" data-i18n="[placeholder]aws-iot.placeholder.capath">
+            </div>
+        </div>
+        <div id="aws-iot-broker-tab-birth" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-birthTopic"><i class="fa fa-tasks"></i> <span data-i18n="aws-iot.label.topic"></span></label>
+                <input type="text" id="node-config-input-birthTopic" data-i18n="[placeholder]aws-iot.placeholder.birth-topic">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-birthQos"><i class="fa fa-empire"></i> <span data-i18n="aws-iot.label.qos"></span></label>
+                <select id="node-config-input-birthQos" style="width:125px !important">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-birthPayload"><i class="fa fa-envelope"></i> <span data-i18n="aws-iot.label.payload"></span></label>
+                <input type="text" id="node-config-input-birthPayload" data-i18n="[placeholder]aws-iot.label.payload">
+            </div>
+        </div>
+        <div id="aws-iot-broker-tab-will" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-willTopic"><i class="fa fa-tasks"></i> <span data-i18n="aws-iot.label.topic"></span></label>
+                <input type="text" id="node-config-input-willTopic" data-i18n="[placeholder]aws-iot.placeholder.will-topic">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-willQos"><i class="fa fa-empire"></i> <span data-i18n="aws-iot.label.qos"></span></label>
+                <select id="node-config-input-willQos" style="width:125px !important">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-willPayload"><i class="fa fa-envelope"></i> <span data-i18n="aws-iot.label.payload"></span></label>
+                <input type="text" id="node-config-input-willPayload" data-i18n="[placeholder]aws-iot.label.payload">
+            </div>
+        </div>
+    </div>
+
+
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('aws-iot-broker',{
+        category: 'config',
+        defaults: {
+            broker: {value:"",required:true},
+            port: {value:8883,required:true,validate:RED.validators.number()},
+            clientid: { value:""},//, validate: function(v) {
+            //    if ($("#node-config-input-clientid").length) {
+            //        // Currently editing the node
+            //        return $("#node-config-input-cleansession").is(":checked") || v.length > 0;
+            //    } else {
+            //        return this.cleansession || v.length > 0;
+            //    }
+            //}},
+            keepalive: {value:60,validate:RED.validators.number()},
+            willTopic: {value:""},
+            willQos: {value:"0"},
+            willRetain: {value:false},
+            willPayload: {value:""},
+            birthTopic: {value:""},
+            birthQos: {value:"0"},
+            birthRetain: {value:false},
+            birthPayload: {value:""},
+            keypath: {value:"",required:true},
+            certpath: {value:"",required:true},
+            capath: {value:"",required:true}
+        },
+        label: function() {
+            if (this.broker == "") { this.broker = "localhost"; }
+            return (this.clientid?this.clientid+"@":"")+this.broker+":"+this.port;
+        },
+        oneditprepare: function () {
+            var tabs = RED.tabs.create({
+                id: "node-config-aws-iot-broker-tabs",
+                onchange: function(tab) {
+                    $("#node-config-aws-iot-broker-tabs-content").children().hide();
+                    $("#" + tab.id).show();
+                }
+            });
+            tabs.addTab({
+                id: "aws-iot-broker-tab-connection",
+                label: this._("aws-iot.tabs-label.connection")
+            });
+            tabs.addTab({
+                id: "aws-iot-broker-tab-security",
+                label: this._("aws-iot.tabs-label.security")
+            });
+            tabs.addTab({
+                id: "aws-iot-broker-tab-birth",
+                label: this._("aws-iot.tabs-label.birth")
+            });
+            tabs.addTab({
+                id: "aws-iot-broker-tab-will",
+                label: this._("aws-iot.tabs-label.will")
+            });
+            setTimeout(function() { tabs.resize()},0);
+            if (typeof this.keepalive  === 'undefined'){
+                this.keepalive = 15;
+                $("#node-config-input-keepalive").val(this.keepalive);
+            }
+            if (typeof this.willQos === 'undefined') {
+                this.willQos = "0";
+                $("#node-config-input-willQos").val("0");
+            }
+            if (typeof this.birthQos === 'undefined') {
+                this.birthQos = "0";
+                $("#node-config-input-birthQos").val("0");
+            }
+        }
+    });
+</script>

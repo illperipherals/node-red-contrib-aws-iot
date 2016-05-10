@@ -1,0 +1,27 @@
+{
+   "name": "node-red-contrib-aws-iot",
+   "version": "0.0.1",
+   "description": "(BETA) A Node-RED node to subscribe and publish to AWS IOT broker",
+   "dependencies": {
+      "aws-iot-device-sdk": "",
+      "util": "",
+      "is-utf8": ""
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/innoteksystems/node-red-contrib-aws-iot.git"
+   },
+   "licence": "Apache-2.0",
+   "keywords": [
+      "innoteksystems"
+   ],
+   "node-red": {
+      "nodes": {
+         "amazon iot": "aws-iot.js"
+      }
+   },
+   "author": {
+      "name": "Stephen Rackham",
+      "email": "stephen.rackham@innoteksystems.co.uk"
+   }
+}

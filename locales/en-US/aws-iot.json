@@ -1,0 +1,53 @@
+{
+   "common": {  
+      "status": { 
+         "connected": "connected",  
+         "disconnected": "disconnected", 
+         "connecting": "connecting" 
+      }  
+   },  
+   "aws-iot": { 
+      "label": { 
+         "broker": "Server",
+         "topic": "Topic",
+         "name": "Name",           
+         "qos": "QoS", 
+         "clientid": "Client ID", 
+         "port": "Port", 
+         "keepalive": "Keep alive time (s)",
+         "payload": "Payload",
+         "keypath": "Key Path",
+         "certpath": "Cert Path",
+         "capath": "CA Path"
+      }, 
+      "tabs-label": { 
+         "connection": "Connection", 
+         "security": "Security", 
+         "will": "Will Message", 
+         "birth": "Birth Message" 
+      }, 
+      "placeholder": { 
+         "clientid": "Leave blank for auto generated",  
+         "will-topic": "Leave blank to disable will message", 
+         "birth-topic": "Leave blank to disable birth message",
+         "keypath": "Enter the path to the AWS key file",
+         "certpath": "Enter the path to the AWS cert file",
+         "capath": "Enter the path to the AWS CA file" 
+      }, 
+      "state": { 
+          "connected": "Connected to broker: __broker__", 
+          "disconnected": "Disconnected from broker: __broker__", 
+          "connect-failed": "Connection failed to broker: __broker__" 
+      }, 
+      "retain": "Retain", 
+      "true": "true", 
+      "false": "false", 
+      "tip": "Tip: Leave topic, qos or retain blank if you want to set them via msg properties.", 
+      "errors": { 
+          "not-defined": "topic not defined", 
+          "missing-config": "missing broker configuration", 
+          "invalid-topic": "Invalid topic specified", 
+          "nonclean-missingclientid": "No client ID set, using clean session" 
+      } 
+   } 
+}
